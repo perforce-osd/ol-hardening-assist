@@ -1,0 +1,28 @@
+# Template exclusion list for the /hardening skill.
+#
+# This file is a TEMPLATE. The live, persistent exclusion list for a given
+# OS lives at <runs_dir>/<os_name>/exclusions.yaml (see SKILL.md, Step 5) and
+# is seeded from this template the first time /hardening runs for that OS.
+# Edit the live file directly to add/remove entries by hand; it is never
+# regenerated or overwritten wholesale by the skill.
+#
+# Each entry:
+#   rule_id: the XCCDF rule id exactly as it appears in the OpenSCAP report
+#            (data-tt-id) and in the OS's SCAP tailoring file (idref)
+#   reason:  why this benchmark cannot/should not be remediated here
+#   added:   YYYY-MM-DD
+#   attempts_exhausted: true if this was added after N failed remediation
+#            attempts (vs. a documented, intentional exclusion from day one)
+#
+# Example (do not remove real 'documented exclusions' already tracked in
+# HARDENING_PROCESS.md and the tailoring file's own selected="false" entries
+# — this list is for the skill's own remediation-loop bookkeeping, it
+# complements but does not replace those):
+#
+# exclusions:
+#   - rule_id: xccdf_org.ssgproject.content_rule_partition_for_tmp
+#     reason: "Single-partition cloud image; no separate /tmp partition by design"
+#     added: 2026-09-03
+#     attempts_exhausted: false
+
+exclusions: []

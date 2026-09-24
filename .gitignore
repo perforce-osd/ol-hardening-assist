@@ -1,0 +1,21 @@
+# Personal Claude Code overrides (machine-specific env, do not commit)
+.claude/settings.local.json
+
+# Local Claude Code worktrees (not part of the repo)
+.claude/worktrees/
+
+# Dedicated pipeline checkout and run output, nested here on purpose but
+# never committed to this repo (see CLAUDE.md Architecture) -- the pipeline
+# checkout is its own git clone (nested .git) and run output can be many GB.
+/hardening-pipeline-main/
+/hardening-runs/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor/OS artifacts
+*.swp
+*.swo
+*~
+.DS_Store
