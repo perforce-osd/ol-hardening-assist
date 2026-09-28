@@ -100,11 +100,13 @@ if any of these need to move again.
 |---|---|
 | `CLAUDE.md` | Workspace overview, architecture, hard rules (this file) |
 | `.claude/skills/hardening/SKILL.md` | Full `/hardening` step-by-step behavior |
+| `.claude/skills/hardening-pr-review/SKILL.md` | Full `/hardening-pr-review` step-by-step behavior (read-only PR gap review) |
 | `.claude/hooks/block-pipeline-write.py` | PreToolUse guard denying commit/push in the pipeline checkout |
 | `scripts/sync_pipeline_repo.sh` | Fetch + hard-reset + clean the pipeline checkout to `origin/main` |
 | `scripts/run_pipeline.sh` | Drive the Packer build for one OS folder |
 | `scripts/fetch_content.sh` | Download/verify a pinned ComplianceAsCode/content release datastream |
 | `scripts/parse_report.py` | Parse an OpenSCAP HTML report into pass/fail JSON |
 | `scripts/lookup_remediation.py` | Check existing/SSG remediation coverage for a rule (read-only) |
+| `scripts/check_pr_symmetry.py` | Mechanical remediation/QA/tailoring gap checks on a PR diff (read-only) |
 | `exclusions.yaml` | Template for a new OS's persistent exclusion list |
 | `README.md` | Short human-facing overview + layout |
