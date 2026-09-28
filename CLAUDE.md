@@ -3,22 +3,28 @@
 This file is the always-loaded workspace context for Claude Code, the
 equivalent of `ol-cve-assist`'s `CLAUDE.md` but for CIS hardening instead of
 CVE backporting. Full step-by-step behavior lives in
-`.claude/skills/hardening/SKILL.md` and is read on demand when `/hardening`
-runs — this file is the map, not the manual.
+`.claude/skills/hardening/SKILL.md` (read on demand when `/hardening` runs)
+and `.claude/skills/hardening-pr-review/SKILL.md` (read on demand when
+`/hardening-pr-review` runs) — this file is the map, not the manual.
 
 ## What this project is
 
 A standalone Claude Code project: `cd` here and run Claude Code directly to
-get `/hardening` available immediately, no other setup needed. It automates
-the CIS hardening loop for `OSD-Linux-hardened-pipeline` — build the
-hardened image, scan it, remediate every failing benchmark not already
-excluded, and repeat until everything is PASSED or EXCLUDED.
+get `/hardening` and `/hardening-pr-review` available immediately, no other
+setup needed. `/hardening` automates the CIS hardening loop for
+`OSD-Linux-hardened-pipeline` — build the hardened image, scan it,
+remediate every failing benchmark not already excluded, and repeat until
+everything is PASSED or EXCLUDED. `/hardening-pr-review` reviews an
+already-open PR from that loop for gaps and always confirms fixes with a
+real build, rather than stopping at code review.
 
 ```
 /hardening <OS_NAME> <CIS_VERSION>
+/hardening-pr-review <pr_number_or_url> [os_name]
 ```
 
-Example: `/hardening rocky8.10 0.1.81`
+Example: `/hardening rocky8.10 0.1.81`,
+`/hardening-pr-review 47`
 
 ## Hard rules
 

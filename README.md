@@ -10,6 +10,12 @@ available as soon as the session starts. See `CLAUDE.md` for the always-loaded
 workspace context (pipeline architecture, hard rules) and
 `.claude/skills/hardening/SKILL.md` for the full step-by-step skill behavior.
 
+A second skill, `/hardening-pr-review`, reviews an already-open
+`OSD-Linux-hardened-pipeline` PR for gaps (symmetry, tailoring/profile
+mismatches, description-vs-code drift) and always confirms fixes with a
+real build — see "Reviewing a PR" below and
+`.claude/skills/hardening-pr-review/SKILL.md` for the full behavior.
+
 This project holds only the skill definition, its helper scripts, and
 config — not the pipeline codebase itself (that's the separate, dedicated
 `hardening-pipeline-main` checkout — see CLAUDE.md) and not any run output
@@ -55,19 +61,45 @@ When you run `/hardening <OS_NAME> <CIS_VERSION>`:
 
 See `.claude/skills/hardening/SKILL.md` for the full detail behind each step.
 
+## Reviewing a PR
+
+`/hardening-pr-review <pr_number_or_url> [os_name]` reviews an open
+`OSD-Linux-hardened-pipeline` PR (typically one `/hardening` produced):
+
+1. Fetches the PR's diff, description, and any existing bot/human review
+   comments via `gh`.
+2. Runs a deterministic check (`scripts/check_pr_symmetry.py`) for
+   remediation/QA.yaml symmetry, newly tailored-out rules, and any
+   hand-edited vendored SSG datastream.
+3. Does judgment-based checks for two specific gap patterns found in
+   practice: a tailoring exclusion that doesn't reach the remediation-loop
+   scan/fix-generation step, and a PR description claiming a mechanism
+   the diff doesn't actually contain — plus cross-referencing the matching
+   `hardening-runs/` folder for the same kind of drift.
+4. **Always follows up with a real Packer build + rescan** against the
+   PR's own branch (never `hardening-pipeline-main`) to empirically confirm
+   fixes work, not just that they read correctly.
+5. Reports gaps, severity-tagged, noting explicitly what was build-verified
+   vs. reviewed only.
+
+Read-only throughout — it never pushes, comments, or edits the PR itself.
+See `.claude/skills/hardening-pr-review/SKILL.md` for full behavior.
+
 ## Layout
 
 ```
-CLAUDE.md                           always-loaded workspace context
-.claude/skills/hardening/SKILL.md   the skill definition Claude follows
-.claude/hooks/block-pipeline-write.py  PreToolUse guard: denies git commit/push
-                                        targeting the pipeline checkout
+CLAUDE.md                                 always-loaded workspace context
+.claude/skills/hardening/SKILL.md         the /hardening skill definition
+.claude/skills/hardening-pr-review/SKILL.md  the /hardening-pr-review skill definition
+.claude/hooks/block-pipeline-write.py     PreToolUse guard: denies git commit/push
+                                           targeting the pipeline checkout
 scripts/
   sync_pipeline_repo.sh             fetches/resets the dedicated pipeline checkout to origin/main
   run_pipeline.sh                   drives the existing Packer build for one OS folder
   fetch_content.sh                  downloads/verifies a pinned ComplianceAsCode/content release
   parse_report.py                   parses an OpenSCAP HTML report into pass/fail JSON
   lookup_remediation.py             checks existing/SSG remediation coverage for a rule
+  check_pr_symmetry.py              mechanical remediation/QA/tailoring gap checks on a PR diff
 exclusions.yaml                     template for a new OS's persistent exclusion list
 ```
 
@@ -75,6 +107,7 @@ exclusions.yaml                     template for a new OS's persistent exclusion
 
 ```
 /hardening <OS_NAME> <CIS_VERSION>
+/hardening-pr-review <pr_number_or_url> [os_name]
 ```
 
 Example: `/hardening rocky8.10 3.0.0`
