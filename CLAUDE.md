@@ -72,6 +72,11 @@ hardening-assist/                              <- this project (git repo, no rem
       the Packer build; nothing else should touch it
     - kept in sync by scripts/sync_pipeline_repo.sh: fetch + hard-reset +
       clean, once per run, before iteration-0 (refuses if dirty or off main)
+    - on a brand-new machine where this folder doesn't exist yet,
+      sync_pipeline_repo.sh clones it itself from the URL pinned in
+      SKILL.md's Configuration table (override: `$HARDENING_PIPELINE_REPO_URL`)
+      — that URL is checked into this project so first-time setup never
+      needs to ask where the pipeline repo lives
     - deliberately separate from any other OSD-Linux-hardened-pipeline
       checkout used for feature-branch dev work (which may be on a
       different branch or have local changes at any time) — /hardening
@@ -108,6 +113,7 @@ if any of these need to move again.
 | `.claude/skills/hardening/SKILL.md` | Full `/hardening` step-by-step behavior |
 | `.claude/skills/hardening-pr-review/SKILL.md` | Full `/hardening-pr-review` step-by-step behavior (read-only PR gap review) |
 | `.claude/hooks/block-pipeline-write.py` | PreToolUse guard denying commit/push in the pipeline checkout |
+| `scripts/setup_host.sh` | One-time (idempotent) host prerequisite install/check — run first on a new machine |
 | `scripts/sync_pipeline_repo.sh` | Fetch + hard-reset + clean the pipeline checkout to `origin/main` |
 | `scripts/run_pipeline.sh` | Drive the Packer build for one OS folder |
 | `scripts/fetch_content.sh` | Download/verify a pinned ComplianceAsCode/content release datastream |

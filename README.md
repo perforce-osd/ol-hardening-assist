@@ -94,6 +94,7 @@ CLAUDE.md                                 always-loaded workspace context
 .claude/hooks/block-pipeline-write.py     PreToolUse guard: denies git commit/push
                                            targeting the pipeline checkout
 scripts/
+  setup_host.sh                     one-time host prerequisite install/check (run first, see Requirements)
   sync_pipeline_repo.sh             fetches/resets the dedicated pipeline checkout to origin/main
   run_pipeline.sh                   drives the existing Packer build for one OS folder
   fetch_content.sh                  downloads/verifies a pinned ComplianceAsCode/content release
@@ -119,9 +120,18 @@ and guardrails.
 ## Requirements
 
 Whatever machine runs this needs everything the base pipeline already
-needs: `packer`, `oscap`/`scap-security-guide` (or the OS's vendored
-datastream under `harden/`), `ansible-playbook`, and Python 3 with
-`PyYAML`.
+needs: `qemu-kvm` (with working KVM acceleration), `packer` (+ its qemu
+plugin), `oscap`/`scap-security-guide` (or the OS's vendored datastream
+under `harden/`), `ansible-playbook`, and Python 3 with `PyYAML`.
+
+**Run `scripts/setup_host.sh` once per machine before the first
+`/hardening` or `/hardening-pr-review` invocation** — it installs/verifies
+all of the above and confirms KVM acceleration is actually usable (device
+present + read/write, CPU exposes `vmx`/`svm`), not just that the packages
+are installed. Safe to re-run any time; every step no-ops if already
+satisfied. It does not stage per-OS base images (e.g.
+`/tmp/images/<os>-x86_64.qcow2`) — that's a per-run input, see the
+pipeline repo's own build docs.
 
 ## Testing the helper scripts standalone
 

@@ -45,11 +45,29 @@ Example: `/hardening rocky8.10 0.1.81`
     the fetched datastream against what's already vendored/installed
     before treating a version bump as meaningful.
 
+## Host prerequisites
+
+Before Step 1's first iteration on a machine that hasn't run `/hardening`
+before (or if the build fails on a missing tool/`/dev/kvm`/KVM
+acceleration), run:
+
+```
+scripts/setup_host.sh
+```
+
+It installs/verifies `qemu-kvm`, `packer` + its qemu plugin,
+`oscap`/`scap-security-guide`, `ansible-playbook`, and Python3+PyYAML, and
+confirms KVM acceleration is actually usable (not just installed) — see
+README.md Requirements. It's idempotent and safe to re-run, so default to
+running it once up front rather than waiting for a build to fail first. It
+does not stage per-OS base images — see Step 1.
+
 ## Configuration
 
 | Setting | Default | Override |
 |---|---|---|
 | Pipeline repo | `<hardening-assist>/hardening-pipeline-main` | `$HARDENING_PIPELINE_DIR` |
+| Pipeline repo clone URL | `git@github.com:perforce-osd/OSD-Linux-hardened-pipeline.git` | `$HARDENING_PIPELINE_REPO_URL` |
 | Runs directory | `<hardening-assist>/hardening-runs` | `$HARDENING_RUNS_DIR` |
 | Max remediation attempts per rule (N) | `3` | `$HARDENING_MAX_ATTEMPTS` |
 
@@ -111,6 +129,14 @@ the exact latest `main` with no leftover build artifacts from a prior run.
 It refuses to run (errors out) if `<pipeline_dir>` isn't currently on
 `main` — that would mean something other than this skill touched it, and
 it should be investigated rather than silently reset.
+
+**First run on a new machine:** if `<pipeline_dir>` doesn't exist yet, the
+script clones it itself (single-branch, `main`) from the pinned URL in the
+Configuration table above — never ask the user for this URL or guess one;
+it's already checked into this project specifically so first-time setup
+on a fresh machine doesn't need it re-supplied. Only fall back to asking
+the user if `$HARDENING_PIPELINE_REPO_URL` is explicitly needed to point
+at a different remote (fork, HTTPS instead of SSH, etc.).
 
 **Never `git commit` or `git push` in this checkout, ever, for any reason**
 — it exists purely so `/hardening` has a stable, isolated source of
