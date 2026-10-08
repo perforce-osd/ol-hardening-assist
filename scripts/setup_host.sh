@@ -3,7 +3,7 @@
 # Run this once per machine, before the first /hardening or
 # /hardening-pr-review invocation, to install/verify everything the
 # underlying Packer build needs: QEMU/KVM, HashiCorp Packer + its qemu
-# plugin, oscap/scap-security-guide, ansible-playbook, and Python3+PyYAML —
+# plugin, xorriso (CD ISO creation), oscap/scap-security-guide, ansible-playbook, and Python3+PyYAML —
 # then confirms KVM acceleration is actually usable (device present,
 # read/write, and the CPU exposes vmx/svm), since that can't be fixed by
 # installing a package if the hypervisor isn't exposing nested
@@ -28,7 +28,7 @@ fail() { echo "    FAIL: $*" >&2; FAIL=1; }
 if ! command -v dnf >/dev/null 2>&1; then
   echo "ERROR: this script only supports dnf-based hosts (RHEL/Rocky/Alma)." >&2
   echo "On another distro, install the equivalents by hand: qemu-kvm, packer," >&2
-  echo "the packer qemu plugin, oscap/scap-security-guide, ansible-playbook," >&2
+  echo "the packer qemu plugin, xorriso, oscap/scap-security-guide, ansible-playbook," >&2
   echo "python3 + PyYAML — see README.md's Requirements section." >&2
   exit 1
 fi
@@ -74,6 +74,14 @@ if packer plugins installed 2>/dev/null | grep -q packer-plugin-qemu; then
 else
   note "Installing packer-plugin-qemu"
   packer plugins install github.com/hashicorp/qemu
+fi
+
+note "Checking CD ISO creation tool (xorriso/mkisofs)"
+if command -v xorriso >/dev/null 2>&1 || command -v mkisofs >/dev/null 2>&1; then
+  ok "xorriso/mkisofs present"
+else
+  note "Installing xorriso (sudo) — Packer's qemu builder needs it to build the cd_files ISO"
+  sudo dnf install -y xorriso
 fi
 
 note "Checking oscap / scap-security-guide"

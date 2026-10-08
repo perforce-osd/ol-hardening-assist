@@ -121,7 +121,7 @@ and guardrails.
 
 Whatever machine runs this needs everything the base pipeline already
 needs: `qemu-kvm` (with working KVM acceleration), `packer` (+ its qemu
-plugin), `oscap`/`scap-security-guide` (or the OS's vendored datastream
+plugin), `xorriso` (or `mkisofs`, for Packer's CD ISO creation), `oscap`/`scap-security-guide` (or the OS's vendored datastream
 under `harden/`), `ansible-playbook`, and Python 3 with `PyYAML`.
 
 **Run `scripts/setup_host.sh` once per machine before the first
